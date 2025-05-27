@@ -12,7 +12,7 @@ const app = express();
 const server = http.createServer(app);
 const io = socketIo(server, {
   cors: {
-    origin: "https://bcd.absyd.xyz/",
+    origin: "*",
     methods: ['GET', 'POST', 'PUT', 'DELETE'], 
     credentials: true,
    }
@@ -28,7 +28,7 @@ app.use(cors());
 app.use(express.json());
 
 // MongoDB connection
-mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/chatapp', {
+mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/chatapp', {
   useNewUrlParser: true,
   useUnifiedTopology: true
 })
@@ -118,6 +118,7 @@ app.post('/api/register', async (req, res) => {
       }
     });
   } catch (error) {
+    console.error('Error registering user:', error);
     res.status(500).json({ message: 'Server error' });
   }
 });
@@ -160,6 +161,7 @@ app.post('/api/login', async (req, res) => {
       }
     });
   } catch (error) {
+    console.error('Error logging in:', error);
     res.status(500).json({ message: 'Server error' });
   }
 });
@@ -174,6 +176,7 @@ app.get('/api/messages', authenticateToken, async (req, res) => {
     
     res.json(messages.reverse());
   } catch (error) {
+    console.error('Error fetching messages:', error);
     res.status(500).json({ message: 'Server error' });
   }
 });
@@ -187,7 +190,8 @@ app.get('/api/users/online', authenticateToken, async (req, res) => {
     
     res.json(users);
   } catch (error) {
-    res.status(500).json({ message: 'Server error' });
+    console.error('Error fetching online users:', error);
+        res.status(500).json({ message: 'Server error' });
   }
 });
 
