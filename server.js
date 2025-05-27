@@ -12,9 +12,10 @@ const app = express();
 const server = http.createServer(app);
 const io = socketIo(server, {
   cors: {
-    origin: "http://localhost:3000",
-    methods: ["GET", "POST"]
-  }
+    origin: "https://bcd.absyd.xyz/",
+    methods: ['GET', 'POST', 'PUT', 'DELETE'], 
+    credentials: true,
+   }
 });
 
 
@@ -27,11 +28,12 @@ app.use(cors());
 app.use(express.json());
 
 // MongoDB connection
-mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/chatapp', {
+mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/chatapp', {
   useNewUrlParser: true,
-  useUnifiedTopology: true,
-});
-
+  useUnifiedTopology: true
+})
+.then(() => console.log('✅ MongoDB Connected'))
+.catch(err => console.error('❌ MongoDB connection error:', err));
 // User Schema
 const userSchema = new mongoose.Schema({
   username: { type: String, required: true, unique: true },
@@ -74,7 +76,7 @@ const authenticateToken = (req, res, next) => {
 app.get('/', (req, res) => {
   res.sendFile(__dirname + '/public/index.html');
 });
-    
+
 // Register
 app.post('/api/register', async (req, res) => {
   try {
@@ -293,7 +295,8 @@ io.on('connection', async (socket) => {
   });
 });
 
-const PORT = process.env.PORT || 5000;
-server.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+const PORT = process.env.PORT || 3001;
+// server.listen(PORT, () => {
+//   console.log(`Server running on port ${PORT}`);
+// });
+module.exports = app;
